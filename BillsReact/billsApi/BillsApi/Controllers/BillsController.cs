@@ -23,7 +23,9 @@ namespace BillsApi.Controllers
             _context = context;
         }
 
+
         // GET: api/Bills
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bills>>> GetBills()
         {

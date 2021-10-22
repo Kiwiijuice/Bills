@@ -19,6 +19,8 @@ namespace BillsApi
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,6 +31,16 @@ namespace BillsApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+                                  });
+            });
+
+
 
             services.AddControllers();
             //Add custom configuration sections
@@ -37,6 +49,7 @@ namespace BillsApi
             //Add database context for use in controllers
             services.AddDbContext<BillsApiContext>(
                 options => options.UseSqlServer(Configuration.GetSection("BillsConfig")["ConnectionString"]));
+
 
             services.AddSwaggerGen(c =>
             {
@@ -53,6 +66,7 @@ namespace BillsApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BillsApi v1"));
             }
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseHttpsRedirection();
 
